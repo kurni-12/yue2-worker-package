@@ -37,7 +37,8 @@ ln -sfn env-sheetsage2 .venv-sheetsage2 && ln -sfn ../pyroot/bin/python3.10 env-
 echo "/root/yue2-home/YuE/src" > env-main/lib/python3.10/site-packages/yue2.pth
 echo "/root/yue2-home/YuE/src" > env-sheetsage2/lib/python3.10/site-packages/yue2.pth
 # 引擎依赖（包内未预装，部署时补，~30MB）
-.venv/bin/python -m ensurepip -q 2>/dev/null
+# pip 引导（便携 Python 无 ensurepip，用 get-pip）
+.venv/bin/python -m pip --version >/dev/null 2>&1 || (curl -fsSL -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && .venv/bin/python /tmp/get-pip.py -q 2>/dev/null)
 .venv/bin/python -m pip install -q "transformers==4.57.6" "tiktoken==0.12.0" "soundfile==0.13.1" "accelerate==1.13.0" "safetensors==0.7.0" 2>/dev/null || echo "⚠ 引擎依赖补装失败"
 .venv/bin/python -c "import tiktoken, transformers, soundfile, accelerate, safetensors; print('引擎依赖 OK')" 2>/dev/null || echo "⚠ 依赖校验失败"
 wait $APT_PID || echo "apt 部分失败，继续"
