@@ -37,14 +37,14 @@ sys.path.insert(0, str(HERE))
 from song_request import SongRequest, RequestError, sha256_file  # noqa: E402
 
 SHANGHAI = timezone(timedelta(hours=8))
-PY_MAIN = HERE / ".venv" / "bin" / "python"
-PY_TRANS = HERE / ".venv-sheetsage2" / "bin" / "python"
+PY_MAIN = HERE / ".venv" / "Scripts" / "python.exe"
+PY_TRANS = HERE / ".venv-sheetsage2" / "Scripts" / "python.exe"
 RUNNER = HERE / "_deploy" / "run_generate.py"
 TRANS_BRIDGE = HERE / "_deploy" / "transcribe_bridge.py"
 GPU_LOCK = HERE / "_deploy" / ".gpu.lock"
 # 显存预算：12 GiB 是引擎自带的低显存路径（get_pipe: budget<=12 → vae_core_frames=512）。
 # 16 GiB 会让引擎切到 1024 帧分块，12GB 卡上解码峰值更高，属未回归配置。
-BUDGET_GIB = 24
+BUDGET_GIB = 12
 
 
 # ============================================================ 阶段与结果
