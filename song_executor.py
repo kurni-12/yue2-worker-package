@@ -273,6 +273,17 @@ class SongExecutor:
             "cot": req.cot,
             "seed": int(req.actual_seed),
         }
+        # 主旋律突出度：AI 混音没有独立音轨，只能用「音色+混音定位」的文本提示真实影响配器
+        lvl = (getattr(req, "melody_level", "") or "").lower()
+        if lvl in ("soft", "strong"):
+            hint = (
+                ", melody played softly on a warm felt piano, gentle dynamics, melody sits behind the accompaniment, low in the mix, background"
+                if lvl == "soft" else
+                ", clear lead melody on violin, melody prominent and forward in the mix"
+            )
+            base = str(data["style"])
+            if hint.strip() not in base:
+                data["style"] = (base + hint)[:600]
         if abc_override:
             data["abc"] = abc_override
         if req.cfg_scale:
