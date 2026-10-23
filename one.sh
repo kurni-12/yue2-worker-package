@@ -23,7 +23,7 @@ echo "分卷数: $N"
 PIDS=""
 for i in $(seq 0 $((N-1))); do
   P=$(printf "%02d" $i)
-  ( curl -fsSL -o "part$P.tar.gz" "$GH/yue2-env.part$P.tar.gz" && echo "part$P OK" ) &
+  ( curl -fSL -o "part$P.tar.gz" "$GH/yue2-env.part$P.tar.gz" && echo "part$P OK" ) &
   PIDS="$PIDS $!"
 done
 wait $PIDS
