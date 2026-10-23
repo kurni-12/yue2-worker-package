@@ -28,7 +28,7 @@ API = "https://www.cbann.com/wp-json/cbann/v1"
 OUT_DIR = ROOT / "输出"
 PY = sys.executable or "python"
 POLL = 15
-BUDGET = "24"   # 必须 <=12：引擎源码 budget<=12 时 vae_core_frames=512（显存减半），>12 会变 1024 直接爆
+BUDGET = "12"   # 必须 <=12：引擎源码 budget<=12 时 vae_core_frames=512（显存减半），>12 会变 1024 直接爆
 MAX_LYRICS = 100000   # 不截断歌词（用户要求完整保留）
 
 def log(msg):
@@ -51,14 +51,8 @@ _PIDF = ROOT / "worker.pid"
 if _PIDF.exists():
     try:
         _old = int(_PIDF.read_text().strip())
-        _o = subprocess.run(["ps", "-p", str(_old), "-o", "stat="], capture_output=True, text=True)
-        _is_worker = False
-        try:
-            with open("/proc/%d/cmdline" % _old, "rb") as _f:
-                _is_worker = b"worker_ai" in _f.read()
-        except Exception:
-            pass
-        if (_o.stdout or "").strip() and not (_o.stdout or "").startswith("Z") and _is_worker:
+        _o = subprocess.run(["tasklist", "/FI", "PID eq %d" % _old], capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if str(_old) in (_o.stdout or ""):
             print("已有 worker 在运行（pid %d），本实例退出 —— 保证一次只跑一首" % _old)
             sys.exit(0)
     except Exception:
@@ -117,7 +111,7 @@ def next_job():
         return None
 
 
-SPLIT_CHARS = 1500   # 每段控制在 300 字内（RTX3060 12GB 可稳定生成）
+SPLIT_CHARS = 300   # 每段控制在 300 字内（RTX3060 12GB 可稳定生成）
 
 
 def split_lyrics(text):
@@ -290,7 +284,10 @@ def run_generation(job):
                 def redirect_request(self, *a, **k):
                     raise RuntimeError("参考音频下载禁止重定向")
 
-            opener = urllib.request.build_opener(_NoRedirect)
+            opener = urllib.request.build_opener(
+                urllib.request.ProxyHandler({"http": "http://127.0.0.1:7890",
+                                             "https": "http://127.0.0.1:7890"}),
+                _NoRedirect)
             ext = os.path.splitext(u.path)[1].lower() or ".mp3"
             if ext not in (".mp3", ".wav", ".flac", ".m4a", ".ogg"):
                 ext = ".mp3"
