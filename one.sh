@@ -31,8 +31,11 @@ wait $PIDS
 echo "=== [3/4] 解压 ==="
 cat part*.tar.gz > env.tar.gz && rm -f part*.tar.gz
 tar xzf env.tar.gz && rm -f env.tar.gz
-ln -sfn env-main .venv && ln -sfn python3.10 env-main/bin/python
-ln -sfn env-sheetsage2 .venv-sheetsage2 && ln -sfn python3.10 env-sheetsage2/bin/python
+ln -sfn env-main .venv && ln -sfn ../pyroot/bin/python3.10 env-main/bin/python
+ln -sfn env-sheetsage2 .venv-sheetsage2 && ln -sfn ../pyroot/bin/python3.10 env-sheetsage2/bin/python
+# .pth 指向 src 布局的 yue2 包
+echo "/root/yue2-home/YuE/src" > env-main/lib/python3.10/site-packages/yue2.pth
+echo "/root/yue2-home/YuE/src" > env-sheetsage2/lib/python3.10/site-packages/yue2.pth
 wait $APT_PID || echo "apt 部分失败，继续"
 .venv/bin/python -c "import torch; print('torch', torch.__version__)"
 ls models | head -5
