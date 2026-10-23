@@ -216,6 +216,9 @@ def build_request(job):
     keep_harmony = bool(params.get("keep_harmony") if "keep_harmony" in params else job.get("keep_harmony"))
     km_raw = params.get("keep_melody", job.get("keep_melody", True))
     keep_melody = km_raw not in (False, 0, "0", "false", "", None)
+    melody_level = str(params.get("melody_level", job.get("melody_level", "normal")) or "normal").strip().lower()
+    if melody_level not in ("soft", "normal", "strong"):
+        melody_level = "normal"
     payload = {
         "mode": mode,
         "title": (job.get("title") or "").strip(),
@@ -229,6 +232,7 @@ def build_request(job):
         "abc": (job.get("abc") or "").strip(),
         "keep_harmony": keep_harmony,
         "keep_melody": keep_melody,
+        "melody_level": melody_level,
         "quality": (job.get("quality") or "standard").strip(),
         "master": bool(job.get("master")),
         "topk": job.get("topk") or 50,
