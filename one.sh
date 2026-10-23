@@ -37,6 +37,14 @@ wait $APT_PID || echo "apt 部分失败，继续"
 .venv/bin/python -c "import torch; print('torch', torch.__version__)"
 ls models | head -5
 
+echo "=== [3.5/4] 拉取最新代码（覆盖包内旧版，几 KB 秒更新）==="
+RAW="https://raw.githubusercontent.com/kurni-12/yue2-worker-package/main"
+for f in worker_ai.py song_executor.py song_request.py web_archive.py audio_exports.py run_generate.py transcribe_bridge.py; do
+  curl -fsSL -o "$f" "$RAW/$f" && echo "$f 已更新" || echo "$f 拉取失败，用包内版本"
+done
+mkdir -p _deploy
+mv -f run_generate.py transcribe_bridge.py _deploy/ 2>/dev/null || true
+
 echo "=== [4/4] 启动 worker ==="
 curl -fsSL -o worker_secret.txt "https://www.cbann.com/deploy/worker_secret.txt" || echo "⚠ 未取到 worker_secret"
 rm -f worker.pid
