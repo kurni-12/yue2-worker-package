@@ -62,6 +62,7 @@ GEN_WHITELIST: Dict[str, Tuple[Any, Any, Any, Any, str]] = {
     "abc":              (str,   0, 20000,  "",    "外部/编辑后 ABC 乐谱"),
     "keep_harmony":     (bool,  None, None, False,"器乐翻奏时保留原和声"),
     "keep_melody":      (bool,  None, None, True, "翻奏时保留主旋律；关闭=纯伴奏（旋律压成和弦根音长音）"),
+    "melody_level":     (str,   0,      8,  "normal","主旋律突出度：soft(轻,垫在伴奏后)|normal|strong(突出)"),
     # 采样
     "topk":             (int,   1,    500,  50,   "top-k 采样"),
     "temperature":      (float, 0.1,   2.0, 1.0,  "采样温度"),
@@ -174,6 +175,7 @@ class SongRequest:
     abc: str = ""
     keep_harmony: bool = False
     keep_melody: bool = True
+    melody_level: str = "normal"
     topk: int = 50
     temperature: float = 1.0
     cfg_scale: float = 3.0
